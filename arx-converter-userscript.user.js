@@ -92,16 +92,14 @@ const convertArx = (arx) => {
   // calculate price of remaining arx
   price += (arx * (discountMap[0][1] / discountMap[0][0]))
 
-  price = Math.round(price + Number.EPSILON) / 100; // Number.EPSILON to prevent floating-point errors while dividing
+  price = ((price / 100) + Number.EPSILON).toFixed(2);
 
-  // append a 0 if there is only 1 decimal for the looks
-  price = "" + price;
-  price = price.split(".")
-  price[1] = (price[1].length < 2) ? price[1] + "0" : price[1]
-  return price.join(".")
+  return price;
 }
 
-window.addEventListener("load", () => {
+const DOMready = fn => document.readyState !== 'loading' ? fn() : document.addEventListener('DOMContentLoaded', fn);
+
+DOMready(function(){
   var tags = document.body.getElementsByClassName("o-price")
 
   for (let i = 0; i < tags.length; i++) {
