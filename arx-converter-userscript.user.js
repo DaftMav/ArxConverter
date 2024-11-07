@@ -201,7 +201,6 @@ DOMready(function(){
 
     // Calculate price for each arx preview value
     for (let i=0; i<arxValues.length; i++) {
-      //let previewprice = (Math.round(( (arxValues[i] * (cost / arxtotal)) + Number.EPSILON) * 100) / 100).toFixed(2);
       let previewprice = (((arxValues[i] * (cost / arxtotal)) * 100) / 100).toFixed(2);
       details += '<dt style="text-align: right;">' + arxValues[i] + ' Arx</dt><dd style="text-align: left; padding-left: 4px;">= '
         + pageCurrency + previewprice + '</dd>';
