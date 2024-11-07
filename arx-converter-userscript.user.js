@@ -1,23 +1,32 @@
 // ==UserScript==
 // @name        ArxConverter
-// @description Replaces the ARX price tags in the elite dangerous dlc store with real-world currency price tags
-// @namespace   Violentmonkey Scripts
+// @description Replaces the ARX price tags in the elite dangerous dlc store with real-world currency price tags (4.5.2024, 09:51:01)
+// @namespace   https://github.com/ShadowLp174/ArxConverter/
 // @match       https://www.elitedangerous.com/store/*
 // @grant       none
-// @version     1.2
+// @version     1.3
 // @author      ShadowLp174
-// @description 4.5.2024, 09:51:01
+// @license     GNU AGPL
+// @attribution DaftMav (https://github.com/DaftMav/ArxConverter/)
 // ==/UserScript==
 
-// PRE-SET CURRENCIES:
+// ==================================
+// Customization options:
+// ==================================
 /*
+PRE-SET CURRENCIES:
 0: GBP
 1: EUR
 2: USD
-
   Change the number below according to your desired currency
 */
 const useCurrency = 0;
+
+const arxValues = [5000, 6000, 8400, 16520, 25500, 33000]; // Preview values shown on each arx package on the arx purchase page
+
+// ==================================
+// Don't change anything below this
+// ==================================
 
 const gbpMap = [
   [5000, 299],
@@ -55,6 +64,10 @@ const currencies = ["£", "€", "$"]
 
 const discountMap = discountMaps[useCurrency];
 const currency = currencies[useCurrency];
+
+const makeNumeric = (str) => {
+    return parseInt(str.replace(/\D/g,'')); //trim non-numeric
+}
 
 const convertArx = (arx) => {
   // NOTE: This conversion algorithm only works with currencies that are based on hundreds. For example: 100 cents = 1 euro
@@ -115,5 +128,55 @@ window.addEventListener("load", () => {
     tags[i].appendChild(currencySymbol)
   }
 
-  //priceElems.map(e => e.innerText = convertArx(e.innerText))
+    // Arx packages page
+    // We need the currency used by the store here since cost varies in different currencies
+    var pageCurrency = document.body.querySelector(".c-arx-currency-switcher__wrapper a.selected");
+    if (pageCurrency !== null) pageCurrency = pageCurrency.innerText.trim();
+
+    var basearx = 0;
+    var basecost = 0;
+    var arxcards = document.body.querySelectorAll("label.c-products-arx__item");
+    for (let i=0; i<arxcards.length; i++) {
+        var top = arxcards[i].querySelector("div.c-products-arx__item-image div");
+        top.style.cssText = "padding-top: 32rem;";
+
+        var arx = makeNumeric(arxcards[i].querySelector("div.c-products-arx__item-info h2").innerText.trim());
+        let arxbonus;
+        try {
+            arxbonus = makeNumeric(arxcards[i].querySelector("div.c-products-arx__item-info span.bonus").innerText.trim());
+        } catch (error) {
+            arxbonus = 0; // no bonus arx found, default to 0
+        }
+        let arxtotal = arx + arxbonus;
+        let cost = parseFloat(arxcards[i].querySelector("span.product-price").innerText.replace(/[^0-9.,]/g, ''));
+
+        // store first package values for %-discount comparison on higher packages
+        if (i == 0) {
+            basearx = arxtotal;
+            basecost = cost;
+        }
+
+        // Adding calculated arx preview values on top of each Arx card
+        var details = `<div class="c-products-arx__item-price" style="position: absolute; top: 0; width: 100%; padding-bottom: 4rem;
+        background-color: transparent; background-image: linear-gradient(to bottom, rgb(180, 149, 109), transparent);">
+        <span class="product-price" style="font-size: 2.6rem;">Calculated ARX value:</span>`;
+        // On packages with bonus arx
+        if (arxbonus > 0) {
+            let discountcost = (((basearx * (cost / arxtotal)) * 100) / 100); // what 5000 arx would be worth with this package
+            let discountpct = (((basecost - discountcost) / basecost) * 100).toFixed(1); // %-decrease from base package
+            details += '<span style="padding: 0 0 4px 0; font-size: 2rem; font-variant-numeric: tabular-nums;">Discount '
+                + discountpct + '% ( Incl. bonus arx )</span>';
+        }
+        details += `<span class="product-price" style="font-size: 2rem; font-variant-numeric: tabular-nums;"><dl style="margin: 0;">`;
+
+        // Calculate price for each arx preview value
+        for (let i=0; i<arxValues.length; i++) {
+            //let previewprice = (Math.round(( (arxValues[i] * (cost / arxtotal)) + Number.EPSILON) * 100) / 100).toFixed(2);
+            let previewprice = (((arxValues[i] * (cost / arxtotal)) * 100) / 100).toFixed(2);
+            details += '<dt style="text-align: right;">' + arxValues[i] + ' Arx</dt><dd style="text-align: left; padding-left: 4px;">= '
+                + pageCurrency + previewprice + '</dd>';
+        }
+        details += '</dl></span></div>';
+        top.innerHTML = details;
+    }
 });
