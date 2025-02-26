@@ -1,14 +1,15 @@
 // ==UserScript==
 // @name        ArxConverter
-// @description Replaces the ARX price tags in the elite dangerous dlc store with real-world currency price tags (4.5.2024, 09:51:01)
-// @namespace   https://github.com/ShadowLp174/ArxConverter/
+// @description Replaces the ARX price tags in the elite dangerous dlc store with real-world currency price tags, and shows discounts on arx packages.
+// @namespace   https://github.com/DaftMav/ArxConverter/
 // @match       https://www.elitedangerous.com/store/*
 // @grant       none
-// @version     1.3
-// @author      ShadowLp174
+// @version     1.4
+// @author      DaftMav
 // @license     GNU AGPL
-// @attribution DaftMav (https://github.com/DaftMav/ArxConverter/)
 // ==/UserScript==
+// This script is a fork of the original ArxConverter by ShadowLp174 (https://github.com/ShadowLp174/ArxConverter/).
+// It's partly re-written to change how prices are calculated, more optional settings were added and shows discounts on arx purchase packages.
 
 // ==================================
 // Customization options:
