@@ -25,10 +25,10 @@ const useCurrency = 0;
 
 /*
 By default the prices will be calculated to the lowest arx package possible to buy each seperate item, so if an item costs 12000 arx
-it will use the cost of the 16800 arx package. But if an item costs 4000 arx it will use the cost of the 5000 arx package.
+it will use the cost of the 17700 arx package. But if an item costs 4000 arx it will use the cost of the 5000 arx package.
 
 However you can choose to always use the cost of one specific arx package, so it will always use that price tier for everything.
-This is useful if for example you've bought the 51000 package and want to see what items costs calculated from that arx:cost ratio.
+This is useful if for example you've bought the 54000 package and want to see what items costs calculated from that arx:cost ratio.
 0: 5000
 1: 8820
 2: 17700
