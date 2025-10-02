@@ -4,7 +4,7 @@
 // @namespace   https://github.com/DaftMav/ArxConverter/
 // @match       https://www.elitedangerous.com/store/*
 // @grant       none
-// @version     1.4
+// @version     1.5
 // @author      DaftMav
 // @license     GNU AGPL
 // ==/UserScript==
@@ -30,49 +30,46 @@ it will use the cost of the 16800 arx package. But if an item costs 4000 arx it 
 However you can choose to always use the cost of one specific arx package, so it will always use that price tier for everything.
 This is useful if for example you've bought the 51000 package and want to see what items costs calculated from that arx:cost ratio.
 0: 5000
-1: 8400
-2: 16800
-3: 25500
-4: 51000
-5: 85000
+1: 8820
+2: 17700
+3: 26800
+4: 54000
+5: 100000
 false: will turn this off
 Change the value of usePackage below to a specific arx package
 */
 const usePackage = false; // false to turn off, or 0 to 5 for one of the arx packages as listed above
 
 // A few other settings:
-const includeBonusArx = true; // Calculations include bonus arx that comes with most arx packages
 const showArx = true; // Set to false to hide Arx prices entirely on items
 const arxValues = [5000, 6000, 8400, 16520, 25500, 33000]; // Preview values shown on each arx package on the arx purchase page
 
 // ==================================
 // Don't change anything below this
 // ==================================
-const bonusArx = [ 0, 420, 900, 1300, 3000, 15000 ]; // bonus arx values for each Arx package tier (probably won't change)
-
 const gbpMap = [
   [5000, 299],
-  [8400, 499],
-  [16800, 959],
-  [25500, 1299],
-  [51000, 2499],
-  [85000, 4499]
+  [8820, 499],
+  [17700, 959],
+  [26800, 1299],
+  [54000, 2499],
+  [100000, 4499]
 ];
 const eurMap = [
   [5000, 349],
-  [8400, 599],
-  [16800, 1149],
-  [25500, 1599],
-  [51000, 2999],
-  [85000, 5499]
+  [8820, 599],
+  [17700, 1149],
+  [26800, 1599],
+  [54000, 2999],
+  [100000, 5499]
 ];
 const usdMap = [
   [5000, 399],
-  [8400, 699],
-  [16800, 1299],
-  [25500, 1899],
-  [51000, 3799],
-  [85000, 5999]
+  [8820, 699],
+  [17700, 1299],
+  [26800, 1899],
+  [54000, 3799],
+  [100000, 5999]
 ];
 const discountMaps = [
   gbpMap,
@@ -110,10 +107,6 @@ const convertArx = (arx) => {
   }
 
   let packageArx = discountMap[idx][0];
-  if (includeBonusArx) {
-    packageArx += bonusArx[idx];
-  }
-
   // calculate price of item within the larger arx package
   let price = (((arx * (discountMap[idx][1] / packageArx)) / 100) + Number.EPSILON).toFixed(2);
 
@@ -170,34 +163,27 @@ DOMready(function(){
     var top = arxcards[i].querySelector("div.c-products-arx__item-image div");
     top.style.cssText = "padding-top: 32rem;";
 
-    var arx = makeNumeric(arxcards[i].querySelector("div.c-products-arx__item-info h2").innerText.trim());
-    let arxbonus;
-    try {
-      arxbonus = makeNumeric(arxcards[i].querySelector("div.c-products-arx__item-info span.bonus").innerText.trim());
-    } catch (error) {
-      arxbonus = 0; // no bonus arx found, default to 0
-    }
-    let arxtotal = arx + arxbonus;
+    var arxtotal = makeNumeric(arxcards[i].querySelector("div.c-products-arx__item-info h2").innerText.trim());
     let cost = parseFloat(arxcards[i].querySelector("span.product-price").innerText.replace(/[^0-9.,]/g, ''));
+
+    // Adding calculated arx preview values on top of each Arx card
+    var details = `<div class="c-products-arx__item-price" style="position: absolute; top: 0; width: 100%; padding-bottom: 4rem;
+    background-color: transparent; background-image: linear-gradient(to bottom, rgb(180, 149, 109), transparent);">`;
 
     // store first package values for %-discount comparison on higher packages
     if (i == 0) {
       basearx = arxtotal;
       basecost = cost;
-    }
-
-    // Adding calculated arx preview values on top of each Arx card
-    var details = `<div class="c-products-arx__item-price" style="position: absolute; top: 0; width: 100%; padding-bottom: 4rem;
-    background-color: transparent; background-image: linear-gradient(to bottom, rgb(180, 149, 109), transparent);">`;
-    // On packages with bonus arx
-    if (arxbonus > 0) {
-      let discountcost = (((basearx * (cost / arxtotal)) * 100) / 100); // what 5000 arx would be worth with this package
-      let discountpct = (((basecost - discountcost) / basecost) * 100).toFixed(1); // %-decrease from base package
-      details += '<span class="product-price" style="font-size: 2.2rem; font-variant-numeric: tabular-nums;">Discount '
-        + discountpct + ' %</span><span style="padding: 0 0 4px 0; font-size: 1.6rem; ">(Incl. bonus arx)</span>';
-    }else{
       details += '<span class="product-price" style="font-size: 2.2rem;">Base Package</span>';
     }
+
+    // On higher packages
+    if (i > 0) {
+      let discountcost = (((basearx * (cost / arxtotal)) * 100) / 100); // what 5000 arx would be worth with this package
+      let discountpct = (((basecost - discountcost) / basecost) * 100).toFixed(1); // %-decrease from base package
+      details += '<span class="product-price" style="font-size: 2.2rem; font-variant-numeric: tabular-nums;">Discount ' + discountpct + ' %</span>';
+    }
+
     details += `<span class="product-price" style="font-size: 1.9rem; font-variant-numeric: tabular-nums; text-wrap: nowrap;"><dl style="margin: 0;">`;
 
     // Calculate price for each arx preview value
