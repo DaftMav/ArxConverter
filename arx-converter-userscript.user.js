@@ -4,7 +4,7 @@
 // @namespace   https://github.com/DaftMav/ArxConverter/
 // @match       https://www.elitedangerous.com/store/*
 // @grant       none
-// @version     1.5
+// @version     1.6
 // @author      DaftMav
 // @license     GNU AGPL
 // ==/UserScript==
