@@ -4,7 +4,7 @@ This userscript converts ARX prices to real currencies and updates the values on
 
 ![ShopPage](https://github.com/user-attachments/assets/0d52ba19-7a21-474b-a7a1-345700a8594d)
 
-It also shows what the discount-% for each Arx package is on the [Arx purchase page](https://www.elitedangerous.com/store/arx), along with several example "Arx = Cost" values to compare packages. Note for these overviews the bonus Arx points are all included.
+It also shows what the discount-% for each Arx package is on the [Arx purchase page](https://www.elitedangerous.com/store/arx), along with several example "Arx = Cost" values to compare packages. (Note the store no longer shows "bonus Arx", FDev updated it into a single Arx amount).
 
 ![ArxPurchasePage](https://github.com/user-attachments/assets/ccdd296a-dbc4-4447-b0c0-7aeb363c72e9)
 
@@ -44,6 +44,5 @@ This is useful if for example you've bought the 51000 package and want to see wh
 |false|0|1|2|3|4|5
 
 ### A few other small settings
-- `includeBonusArx` By default any bonus Arx that comes with most Arx packages is included for any calculations on items. Disabling this may cause it to use a more expensive package.
 - `showArx` By default items will still show the original Arx prices, this can be changed to hide Arx prices entirely on items and only show the cost in your currency.
 - `arxValues` This holds a set of preview values shown on each Arx package on the Arx purchase page. You can customize this to your liking but best to keep it limited to at most six values.
