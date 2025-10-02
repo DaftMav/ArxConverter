@@ -122,7 +122,7 @@ DOMready(function(){
     // Prevent layout overflow issue with too long price tags and on tiny store item blocks
     tags[i].style.cssText = "max-width: 100%; text-wrap: nowrap; font-size: 2rem;";
 
-    let arx = tags[i].children[0].innerText;
+    let arx = tags[i].children[0].innerText.trim();
     arx = arx.split(" ")
 
     if (!showArx) {
